@@ -4,74 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kuis Interaktif</title>
-
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        :root { 
-            --primary: #00ADB5; 
-            --success: #28a745; 
-            --danger: #dc3545; 
-            --bg: #1a1a2e;
-            --card-bg: #2a2a3e;
-            --text: #e0e0e0;
-        }
+        :root { --primary: #00ADB5; --success: #28a745; --danger: #dc3545; --bg: #1a1a2e; --card-bg: #2a2a3e; --text: #e0e0e0; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 15px; padding-bottom: 80px; color: var(--text); }
-        
-        .quiz-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #12121f;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-        }
+        .quiz-header { display: flex; align-items: center; justify-content: space-between; background: #12121f; color: white; padding: 10px 15px; border-radius: 15px; margin-bottom: 15px; }
         #timerDisplay { font-weight: bold; color: var(--primary); }
         .low-time { color: #ff4d4d !important; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
-
         .quiz-card { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .q-info { font-size: 0.8rem; color: var(--primary); font-weight: bold; margin-bottom: 10px; display: block; }
         .question { font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px; }
-        
         .option { display: block; border: 2px solid #3a3a5e; padding: 12px 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; background: #1e1e30; }
         .option input { display: none; }
         .option.selected { border-color: var(--primary); background: #1a3a3e; }
-        .option.correct { border-color: var(--success); background: #1a3a2a; }
+        .option.correct { border-color: var(--success); background: #1a1a2a; }
         .option.wrong { border-color: var(--danger); background: #3a1a1a; }
-        
         .btn-action { width: 100%; padding: 15px; border: none; border-radius: 12px; color: #121212; font-weight: bold; cursor: pointer; margin-top: 10px; }
         #checkBtn { background: var(--primary); }
         #discussBtn { background: #5a5a7e; display: none; color: white; }
-
-        .nav-bottom {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #12121f;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.4);
-        }
-        .btn-nav {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid var(--primary);
-            background: transparent;
-            color: var(--primary);
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            font-size: 0.8rem;
-        }
+        .nav-bottom { position: fixed; bottom: 0; left: 0; right: 0; background: #12121f; padding: 15px; display: flex; justify-content: space-between; gap: 10px; }
+        .btn-nav { flex: 1; padding: 12px; border: 2px solid var(--primary); background: transparent; color: var(--primary); border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; }
         .btn-nav:disabled { border-color: #555; color: #555; cursor: not-allowed; }
-        .btn-nav:active:not(:disabled) { background: var(--primary); color: #121212; }
     </style>
 </head>
 <body>
@@ -85,7 +39,6 @@
         <span class="q-info" id="topicInfo">Topik</span>
         <div class="question" id="qText">Memuat soal...</div>
         <div id="options"></div>
-        
         <button id="checkBtn" class="btn-action" onclick="checkAnswer()">PERIKSA JAWABAN</button>
         <button id="discussBtn" class="btn-action" onclick="goToDiscussion()">LIHAT PEMBAHASAN</button>
     </div>
@@ -102,6 +55,13 @@
         let timeLeft = 60;
         let timerInterval;
         const currentID = new URLSearchParams(window.location.search).get('id');
+
+        // Fungsi untuk merender ulang MathJax
+        function renderMath() {
+            if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                MathJax.typesetPromise();
+            }
+        }
 
         function startTimer() {
             const display = document.getElementById('timerDisplay');
@@ -132,15 +92,12 @@
             
             document.getElementById('quizNumberDisplay').innerText = `Soal ${currentIndex + 1} dari ${topicSoals.length}`;
 
+            // Setup tombol navigasi
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
-
-            if (currentIndex > 0) {
-                prevBtn.onclick = () => location.href = `quiz.html?id=${topicSoals[currentIndex - 1].ID}`;
-            } else {
-                prevBtn.disabled = true;
-            }
-
+            prevBtn.onclick = () => currentIndex > 0 ? location.href = `quiz.html?id=${topicSoals[currentIndex - 1].ID}` : null;
+            if (currentIndex === 0) prevBtn.disabled = true;
+            
             if (currentIndex < topicSoals.length - 1) {
                 nextBtn.onclick = () => location.href = `quiz.html?id=${topicSoals[currentIndex + 1].ID}`;
             } else {
@@ -148,6 +105,7 @@
                 nextBtn.onclick = () => location.href = 'dashboard.html';
             }
 
+            // Render Opsi
             const ops = ['a','b','c','d','e'];
             const container = document.getElementById('options');
             ops.forEach(o => {
@@ -159,13 +117,9 @@
                         </label>`;
                 }
             });
-            // BERI JEDA SEDIKIT AGAR DOM SIAP
-            setTimeout(() => {
-                if (typeof MathJax !== 'undefined') {
-                    MathJax.typeset();
-                }
-            }, 100); 
 
+            // Panggil renderMath setelah DOM diperbarui
+            renderMath();
             startTimer();
         });
 
@@ -187,10 +141,7 @@
             
             if(selectedIdx === correctAns) {
                 selectedLabel.classList.add('correct');
-                if (!answeredIds.includes(currentID)) {
-                    score += 1;
-                    answeredIds.push(currentID);
-                }
+                if (!answeredIds.includes(currentID)) { score += 1; answeredIds.push(currentID); }
             } else {
                 selectedLabel.classList.add('wrong');
                 document.getElementById('label-'+correctAns).classList.add('correct');
@@ -199,14 +150,11 @@
 
             localStorage.setItem('quizScore', score);
             localStorage.setItem('answeredIds', JSON.stringify(answeredIds));
-            
             document.getElementById('checkBtn').style.display = 'none';
             document.getElementById('discussBtn').style.display = 'block';
         }
 
-        function goToDiscussion() {
-            window.location.href = `discussion.html?id=${currentID}`;
-        }
+        function goToDiscussion() { window.location.href = `discussion.html?id=${currentID}`; }
     </script>
 </body>
 </html>
