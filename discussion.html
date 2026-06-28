@@ -72,7 +72,13 @@
             }
             
             if (window.MathJax) {
-                MathJax.typeset();
+                 setTimeout(() => {
+                if (typeof MathJax !== 'undefined') {
+                    MathJax.typeset();
+                }
+            }, 100); 
+
+            startTimer();
             }
         });
     </script>

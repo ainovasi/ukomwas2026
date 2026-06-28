@@ -159,7 +159,13 @@
                         </label>`;
                 }
             });
-            MathJax.typeset();
+            // BERI JEDA SEDIKIT AGAR DOM SIAP
+            setTimeout(() => {
+                if (typeof MathJax !== 'undefined') {
+                    MathJax.typeset();
+                }
+            }, 100); 
+
             startTimer();
         });
 
