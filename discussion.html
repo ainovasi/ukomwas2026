@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembahasan</title>
+  <script  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+    <style>
+        :root { --primary: #00ADB5; --bg: #1a1a2e; --text: #e0e0e0; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; color: var(--text); line-height: 1.6; }
+        .header { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; }
+        .header h2 { color: var(--primary); }
+        .section { margin-bottom: 25px; }
+        .section-title { font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .tips-box { background: #2a2a1e; border-left: 5px solid #ffc107; padding: 15px; border-radius: 8px; font-style: italic; color: #ddd; }
+        
+        .nav-group { display: flex; flex-direction: column; gap: 10px; margin-top: 30px; }
+        .btn { border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; font-size: 0.9rem; transition: 0.2s; }
+        .btn-numbers { background: var(--primary); color: #1a1a2e; }
+        .btn-category { background: #2a2a3e; color: var(--text); }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="header"><h2>Pembahasan</h2></div>
+    
+    <div id="content">
+        <p style="color: #999;">Memuat pembahasan...</p>
+    </div>
+    
+    <div class="nav-group">
+        <button id="btnBackToNumbers" class="btn btn-numbers">🔢 KEMBALI KE NOMOR SOAL</button>
+        
+        <button class="btn btn-category" onclick="window.location.href='category.html'">
+            🏠 KEMBALI KE BERANDA
+        </button>
+    </div>
+
+    <script>
+        const id = new URLSearchParams(window.location.search).get('id');
+        
+        fetch('soal.json')
+        .then(r => r.json())
+        .then(data => {
+            const s = data.find(item => item.ID == id);
+            const container = document.getElementById('content');
+            
+            if(!s) {
+                container.innerHTML = "Data soal tidak ditemukan.";
+                return;
+            }
+
+            const btnNumbers = document.getElementById('btnBackToNumbers');
+            btnNumbers.onclick = function() {
+                window.location.href = `numbers.html?topic=${encodeURIComponent(s.topik)}`;
+            };
+            
+            if(s.bahas2) {
+                container.innerHTML = s.bahas2;
+            } else {
+                container.innerHTML = `
+                    <div class="section">
+                        <div class="section-title">🔍 Analisis Jawaban</div>
+                        <div>${s.pembahasan}</div>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">💡 Tips Menjawab</div>
+                        <div class="tips-box">${s.tips}</div>
+                    </div>
+                `;
+            }
+            
+            if (window.MathJax) {
+                MathJax.typeset();
+            }
+        });
+    </script>
+</body>
+</html>

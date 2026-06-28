@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif</title>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root { 
+            --primary: #00ADB5; 
+            --success: #28a745; 
+            --danger: #dc3545; 
+            --bg: #1a1a2e;
+            --card-bg: #2a2a3e;
+            --text: #e0e0e0;
+        }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 15px; padding-bottom: 80px; color: var(--text); }
+        
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #12121f;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+        #timerDisplay { font-weight: bold; color: var(--primary); }
+        .low-time { color: #ff4d4d !important; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        .quiz-card { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .q-info { font-size: 0.8rem; color: var(--primary); font-weight: bold; margin-bottom: 10px; display: block; }
+        .question { font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px; }
+        
+        .option { display: block; border: 2px solid #3a3a5e; padding: 12px 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; background: #1e1e30; }
+        .option input { display: none; }
+        .option.selected { border-color: var(--primary); background: #1a3a3e; }
+        .option.correct { border-color: var(--success); background: #1a3a2a; }
+        .option.wrong { border-color: var(--danger); background: #3a1a1a; }
+        
+        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 12px; color: #121212; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #checkBtn { background: var(--primary); }
+        #discussBtn { background: #5a5a7e; display: none; color: white; }
+
+        .nav-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #12121f;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.4);
+        }
+        .btn-nav {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+        .btn-nav:disabled { border-color: #555; color: #555; cursor: not-allowed; }
+        .btn-nav:active:not(:disabled) { background: var(--primary); color: #121212; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header">
+        <span id="quizNumberDisplay">Soal --</span>
+        <span id="timerDisplay">01:00</span>
+    </div>
+
+    <div class="quiz-card" id="quizCard">
+        <span class="q-info" id="topicInfo">Topik</span>
+        <div class="question" id="qText">Memuat soal...</div>
+        <div id="options"></div>
+        
+        <button id="checkBtn" class="btn-action" onclick="checkAnswer()">PERIKSA JAWABAN</button>
+        <button id="discussBtn" class="btn-action" onclick="goToDiscussion()">LIHAT PEMBAHASAN</button>
+    </div>
+
+    <div class="nav-bottom">
+        <button id="prevBtn" class="btn-nav">« SEBELUMNYA</button>
+        <button id="nextBtn" class="btn-nav">SELANJUTNYA »</button>
+    </div>
+
+    <script>
+        let selectedIdx = null;
+        let correctAns = "";
+        let currentTopic = "";
+        let timeLeft = 60;
+        let timerInterval;
+        const currentID = new URLSearchParams(window.location.search).get('id');
+
+        function startTimer() {
+            const display = document.getElementById('timerDisplay');
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                let sec = timeLeft % 60;
+                display.innerText = `00:${sec.toString().padStart(2, '0')}`;
+                if (timeLeft <= 10) display.classList.add('low-time');
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu habis!");
+                    window.location.href = `numbers.html?topic=${encodeURIComponent(currentTopic)}`;
+                }
+            }, 1000);
+        }
+
+        fetch('soal.json').then(r => r.json()).then(data => {
+            const s = data.find(item => item.ID == currentID);
+            if(!s) return;
+
+            currentTopic = s.topik;
+            correctAns = s.jawaban_benar.toLowerCase();
+            document.getElementById('qText').innerHTML = s.pertanyaan;
+            document.getElementById('topicInfo').innerText = currentTopic;
+
+            const topicSoals = data.filter(item => item.topik === currentTopic);
+            const currentIndex = topicSoals.findIndex(item => item.ID == currentID);
+            
+            document.getElementById('quizNumberDisplay').innerText = `Soal ${currentIndex + 1} dari ${topicSoals.length}`;
+
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if (currentIndex > 0) {
+                prevBtn.onclick = () => location.href = `quiz.html?id=${topicSoals[currentIndex - 1].ID}`;
+            } else {
+                prevBtn.disabled = true;
+            }
+
+            if (currentIndex < topicSoals.length - 1) {
+                nextBtn.onclick = () => location.href = `quiz.html?id=${topicSoals[currentIndex + 1].ID}`;
+            } else {
+                nextBtn.innerText = "FINISH";
+                nextBtn.onclick = () => location.href = 'dashboard.html';
+            }
+
+            const ops = ['a','b','c','d','e'];
+            const container = document.getElementById('options');
+            ops.forEach(o => {
+                if(s['jawaban_'+o]) {
+                    container.innerHTML += `
+                        <label class="option" id="label-${o}">
+                            <input type="radio" name="pilihan" value="${o}" onclick="selectOption('${o}')">
+                            <b>${o.toUpperCase()}.</b> ${s['jawaban_'+o]}
+                        </label>`;
+                }
+            });
+            MathJax.typeset();
+            startTimer();
+        });
+
+        function selectOption(o) {
+            document.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+            document.getElementById('label-'+o).classList.add('selected');
+            selectedIdx = o;
+        }
+
+        function checkAnswer() {
+            if(!selectedIdx) return alert("Pilih jawaban dulu!");
+            clearInterval(timerInterval);
+            
+            let score = parseInt(localStorage.getItem('quizScore') || 0);
+            let answeredIds = JSON.parse(localStorage.getItem('answeredIds') || "[]");
+
+            document.querySelectorAll('.option').forEach(el => el.style.pointerEvents = 'none');
+            const selectedLabel = document.getElementById('label-'+selectedIdx);
+            
+            if(selectedIdx === correctAns) {
+                selectedLabel.classList.add('correct');
+                if (!answeredIds.includes(currentID)) {
+                    score += 1;
+                    answeredIds.push(currentID);
+                }
+            } else {
+                selectedLabel.classList.add('wrong');
+                document.getElementById('label-'+correctAns).classList.add('correct');
+                if (!answeredIds.includes(currentID)) answeredIds.push(currentID);
+            }
+
+            localStorage.setItem('quizScore', score);
+            localStorage.setItem('answeredIds', JSON.stringify(answeredIds));
+            
+            document.getElementById('checkBtn').style.display = 'none';
+            document.getElementById('discussBtn').style.display = 'block';
+        }
+
+        function goToDiscussion() {
+            window.location.href = `discussion.html?id=${currentID}`;
+        }
+    </script>
+</body>
+</html>

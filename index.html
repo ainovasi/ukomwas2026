@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujian Kompetensi</title>
+    <style>
+        :root { 
+            --primary: #00ADB5; 
+            --primary-glow: rgba(0, 173, 181, 0.4);
+            --dark: #222831; 
+            --light: #EEEEEE; 
+        }
+        body { 
+            margin: 0; 
+            background: #1a1f26; /* Sedikit lebih gelap agar efek glow lebih keluar */
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+        .splash-container { 
+            text-align: center; 
+            animation: fadeIn 1.5s ease-out; 
+        }
+        
+        /* --- STYLE LOGO BARU --- */
+        .logo { 
+            width: 140px; 
+            height: 140px; 
+            margin-bottom: 25px; 
+            filter: drop-shadow(0 0 15px var(--primary-glow));
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        /* Animasi berdenyut halus pada elemen dalam SVG */
+        .pulse-element {
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        h1 { 
+            font-weight: 700; /* Dibuat sedikit lebih tegas */
+            letter-spacing: 3px; 
+            margin: 0; 
+            background: linear-gradient(135deg, #fff 60%, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        p { 
+            color: var(--primary); 
+            font-size: 0.9rem; 
+            margin-top: 5px;
+            margin-bottom: 35px; 
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+        .btn-start { 
+            background: var(--primary); 
+            border: none; 
+            padding: 15px 45px; 
+            color: white; 
+            border-radius: 30px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            text-decoration: none; 
+            display: inline-block; 
+            box-shadow: 0 5px 15px var(--primary-glow);
+            letter-spacing: 1px;
+        }
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 173, 181, 0.6);
+        }
+        .btn-start:active { 
+            transform: scale(0.95); 
+        }
+
+        /* --- ANIMASI --- */
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        /* Efek melayang (Floating) khas objek AR */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(3deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        /* Efek napas/glow pada inti logo */
+        @keyframes pulse {
+            from { opacity: 0.6; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-container">
+        
+        <svg class="logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="cyberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00FFF6" />
+                    <stop offset="100%" stop-color="#00ADB5" />
+                </linearGradient>
+            </defs>
+            
+            <path d="M 15 25 L 15 15 L 25 15" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 85 25 L 85 15 L 75 15" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 15 75 L 15 85 L 25 85" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 85 75 L 85 85 L 75 85" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            
+            <g stroke="url(#cyberGrad)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+                <path d="M 50 25 L 80 40 L 80 70 L 50 85 L 20 70 L 20 40 Z" fill="rgba(0, 173, 181, 0.05)" />
+                <path d="M 50 25 L 50 55" />
+                <path d="M 50 55 L 20 40" />
+                <path d="M 50 55 L 80 40" />
+            </g>
+
+            <circle class="pulse-element" cx="50" cy="55" r="5" fill="#00FFF6" />
+        </svg>
+
+        <h1>QUIZ MATERI PAJAK V.260628 </h1>
+		<h4>Untuk Keperluan Internal ( Non Official )</h4>
+		<p>
+        <h4>DISKLAIMER : <br><br><p style='color:#F0FF96'>Sebanyak 690 Soal latihan  ini dibuat dengan bantuan Teknologi AI, <br> sehingga masih terdapat kemungkinan kesalahan atau bias yang belum tervalidasi oleh kami. <br> Jika Anda menemukan kekeliruan, silakan kirimkan saran atau koreksi ke:<br> itiakladoijo@gmail.com.</p></h4>
+        <a href="quote.html" class="btn-start">MULAI MENCOBA</a>
+    </div>
+</body>
+</html>

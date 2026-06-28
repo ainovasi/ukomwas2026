@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motivation - Simulasi Kuis</title>
+    <style>
+        :root {
+            --primary: #00ADB5;
+            --bg: #1a1a2e;
+            --text: #e0e0e0;
+        }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .quote-container {
+            max-width: 500px;
+            animation: fadeInUp 1s ease-out;
+        }
+        .icon-quote {
+            fill: var(--primary);
+            width: 50px;
+            height: 50px;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        .quote-text {
+            font-size: 1.5rem;
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        .quote-author {
+            font-size: 0.9rem;
+            color: var(--primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .btn-continue {
+            margin-top: 50px;
+            background: transparent;
+            border: 1px solid var(--primary);
+            padding: 12px 40px;
+            color: var(--primary);
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn-continue:active {
+            background: var(--primary);
+            color: #1a1a2e;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quote-container">
+        <svg class="icon-quote" viewBox="0 0 24 24">
+            <path d="M14.017 21v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+        </svg>
+
+        <div class="quote-text" id="quote-display">
+            "Investasi dalam pengetahuan selalu memberikan bunga terbaik."
+        </div>
+        <div class="quote-author" id="author-display">
+            — Benjamin Franklin
+        </div>
+    </div>
+
+    <a href="category.html" class="btn-continue">LANJUTKAN</a>
+
+    <script>
+        const quotes = [
+            { text: "Hanya satu hal yang membuat impian mustahil dicapai: ketakutan akan kegagalan.", author: "Paulo Coelho" },
+            { text: "Masa depan bergantung pada apa yang Anda lakukan hari ini.", author: "Mahatma Gandhi" },
+            { text: "Pendidikan adalah senjata paling ampuh yang dapat Anda gunakan untuk mengubah dunia.", author: "Nelson Mandela" },
+            { text: "Keberhasilan adalah kemampuan untuk melewati kegagalan demi kegagalan tanpa kehilangan antusiasme.", author: "Winston Churchill" },
+            { text: "Jangan biarkan apa yang tidak bisa Anda lakukan mengganggu apa yang bisa Anda lakukan.", author: "John Wooden" }
+        ];
+
+        function getRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            const selected = quotes[randomIndex];
+            document.getElementById('quote-display').innerText = `"${selected.text}"`;
+            document.getElementById('author-display').innerText = `— ${selected.author}`;
+        }
+
+        window.onload = getRandomQuote;
+    </script>
+</body>
+</html>

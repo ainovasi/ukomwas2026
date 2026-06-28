@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Nomor Soal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { 
+            --primary: #00ADB5; 
+            --bg: #1a1a2e; 
+            --dark: #e0e0e0; 
+            --success: #28a745; 
+            --accent: #3a3a5e;
+            --card-bg: #2a2a3e;
+        }
+        
+        body { 
+            margin: 0; 
+            background: var(--bg); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 20px; 
+            color: var(--dark);
+        }
+
+        .header { margin-bottom: 25px; }
+        .header h2 { 
+            margin: 0; 
+            font-size: 1.2rem; 
+            color: var(--primary); 
+            border-left: 4px solid var(--primary); 
+            padding-left: 12px; 
+        }
+        .header p { margin: 8px 0 0 16px; font-size: 0.85rem; color: #aaa; }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .num-btn {
+            background: var(--card-bg);
+            padding: 15px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            text-decoration: none;
+            color: var(--dark);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .num-btn i {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            opacity: 0.6;
+            color: var(--primary);
+        }
+
+        .num-btn span {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
+        .num-btn.answered {
+            background: var(--success);
+            color: #121212;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
+        }
+
+        .num-btn.answered i {
+            opacity: 1;
+            color: #121212;
+        }
+
+        .num-btn:active {
+            transform: scale(0.92);
+            background: #1e3e40;
+        }
+
+        .num-btn.answered:active {
+            background: #218838;
+        }
+
+        .action-area {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-finish {
+            width: 100%; 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 16px; 
+            border-radius: 12px; 
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .btn-back {
+            text-align: center;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2 id="topicTitle">Memuat Topik...</h2>
+        <p>Pilih nomor soal untuk mulai menjawab.</p>
+    </div>
+
+    <div class="grid-container" id="numberGrid">
+        </div>
+
+    <div class="action-area">
+        <button onclick="location.href='dashboard.html'" class="btn-finish">
+            <i class="fa-solid fa-flag-checkered"></i> SELESAI & LIHAT HASIL
+        </button>
+
+        <a href="category.html" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Topik
+        </a>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const currentTopic = params.get('topic') || "Topik Tidak Diketahui";
+        document.getElementById('topicTitle').innerText = currentTopic;
+
+        const answeredIds = JSON.parse(localStorage.getItem('answeredIds') || "[]");
+
+        fetch('soal.json')
+            .then(res => res.json())
+            .then(data => {
+                const grid = document.getElementById('numberGrid');
+                const topicSoals = data.filter(s => s.topik === currentTopic);
+                
+                topicSoals.forEach((s, index) => {
+                    const btn = document.createElement('a');
+                    btn.className = 'num-btn';
+                    btn.href = `quiz.html?id=${s.ID}`;
+                    
+                    let iconClass = "fa-regular fa-circle-question"; 
+                    const isAlreadyAnswered = answeredIds.includes(s.ID.toString());
+                    
+                    if (isAlreadyAnswered) {
+                        btn.classList.add('answered');
+                        iconClass = "fa-solid fa-circle-check"; 
+                    }
+                    
+                    btn.innerHTML = `
+                        <i class="${iconClass}"></i>
+                        <span>${index + 1}</span>
+                    `;
+                    
+                    grid.appendChild(btn);
+                });
+                
+                if(topicSoals.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column: span 4; padding: 40px 0; color: #999; text-align:center;">
+                            <i class="fa-solid fa-folder-open" style="font-size: 2rem; margin-bottom: 10px; display:block;"></i>
+                            Belum ada soal tersedia.
+                        </div>`;
+                }
+            })
+            .catch(err => {
+                console.error("Gagal memuat data soal:", err);
+                document.getElementById('numberGrid').innerHTML = "<p style='color:#e0e0e0;'>Gagal memuat data soal.</p>";
+            });
+    </script>
+</body>
+</html>

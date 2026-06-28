@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Kategori</title>
+    <style>
+        :root { --primary: #00ADB5; --bg: #1a1a2e; --card-bg: #2a2a3e; --text: #e0e0e0; }
+        body { margin: 0; background: var(--bg); font-family: 'Segoe UI', sans-serif; color: var(--text); }
+        header { background: var(--card-bg); padding: 20px; text-align: center; border-bottom: 2px solid var(--primary); position: sticky; top: 0; }
+        header h3 { color: var(--primary); margin: 0; }
+        .list-container { padding: 15px; }
+        .card { background: var(--card-bg); margin-bottom: 15px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; text-decoration: none; color: var(--text); }
+        .card:active { background: #1e3e40; }
+        .card h3 { margin: 0; font-size: 1rem; flex: 1; }
+        .icon { background: var(--primary); color: #1a1a2e; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <header><h3>Daftar Kategori</h3></header>
+    <div class="list-container" id="categoryList">
+        <!-- Data akan dimuat via JS -->
+    </div>
+
+    <script>
+        fetch('referensi.json')
+            .then(res => res.json())
+            .then(data => {
+                const categories = [...new Set(data.map(item => item.kategori))];
+                const list = document.getElementById('categoryList');
+                categories.forEach(cat => {
+                    const card = document.createElement('a');
+                    card.className = 'card';
+                    card.href = `topic.html?cat=${encodeURIComponent(cat)}`;
+                    card.innerHTML = `<h3>${cat}</h3><div class="icon">→</div>`;
+                    list.appendChild(card);
+                });
+            });
+    </script>
+</body>
+</html>

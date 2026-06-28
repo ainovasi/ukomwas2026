@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Topik</title>
+    <style>
+        :root { --primary: #00ADB5; --bg: #1a1a2e; --card-bg: #2a2a3e; --text: #e0e0e0; }
+        body { margin: 0; background: var(--bg); font-family: 'Segoe UI', sans-serif; color: var(--text); }
+        header { background: var(--card-bg); padding: 20px; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 100; }
+        header h2 { margin: 0; font-size: 1.1rem; color: var(--primary); }
+        .list-container { padding: 15px; }
+        .topic-card { 
+            background: var(--card-bg); 
+            margin-bottom: 12px; 
+            padding: 18px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            text-decoration: none; 
+            color: var(--text);
+            transition: 0.2s;
+        }
+        .topic-card:active { transform: scale(0.98); background: #1e3e40; }
+        .topic-name { font-weight: 500; font-size: 0.95rem; flex: 1; padding-right: 10px; }
+        .arrow { color: var(--primary); font-weight: bold; }
+    </style>
+</head>
+<body>
+    <header>
+        <h2 id="catTitle">Topik</h2>
+    </header>
+    
+    <div class="list-container" id="topicList">
+        </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const currentCat = params.get('cat');
+        document.getElementById('catTitle').innerText = currentCat || "Daftar Topik";
+
+        fetch('referensi.json')
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('topicList');
+                const filtered = data.filter(item => item.kategori === currentCat);
+                
+                filtered.forEach(t => {
+                    const card = document.createElement('a');
+                    card.className = 'topic-card';
+                    card.href = `numbers.html?topic=${encodeURIComponent(t.topik)}`;
+                    card.innerHTML = `
+                        <div class="topic-name">${t.topik}</div>
+                        <div class="arrow">→</div>
+                    `;
+                    list.appendChild(card);
+                });
+            });
+    </script>
+</body>
+</html>
